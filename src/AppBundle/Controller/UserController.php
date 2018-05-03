@@ -11,6 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Schema\View;
 use \Datetime;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\YamlFileLoader;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 
 /**
@@ -31,8 +35,16 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
         $users = $em->getRepository('AppBundle:User')->findAll();
 
-        $data =  $this->get('serializer')->serialize($users, 'json');
-        $response = new Response($data);
+        $classMetadataFactory = new ClassMetadataFactory(new YamlFileLoader(__DIR__.'/../Resources/config/serializer/Entity.User.yml'));
+
+        $normalizer = new ObjectNormalizer($classMetadataFactory);
+        $serializer = new Serializer(array($normalizer));
+
+        $data = $serializer->normalize($users, null, array('groups' => array('group2')));
+  
+        $data_serialized =  $this->get('serializer')->serialize($data, 'json');
+
+        $response = new Response($data_serialized);
         $response->headers->set('Content-Type', 'application/json');
         
         return $response;

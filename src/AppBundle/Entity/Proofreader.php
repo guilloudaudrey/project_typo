@@ -28,13 +28,6 @@ class Proofreader
      */
     private $rating;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="corrections_number", type="integer")
-     */
-    private $correctionsNumber;
-
     
     /**
      * @ORM\OneToOne(targetEntity="User")
@@ -43,7 +36,7 @@ class Proofreader
     private $user_id;
 
     /**
-    * @ORM\OneToMany(targetEntity="correction", mappedBy="proofreader")
+    * @ORM\OneToMany(targetEntity="Correction", mappedBy="proofreader")
     */
     private $corrections;
 
@@ -81,29 +74,6 @@ class Proofreader
         return $this->rating;
     }
 
-    /**
-     * Set correctionsNumber
-     *
-     * @param integer $correctionsNumber
-     *
-     * @return Proofreader
-     */
-    public function setCorrectionsNumber($correctionsNumber)
-    {
-        $this->correctionsNumber = $correctionsNumber;
-
-        return $this;
-    }
-
-    /**
-     * Get correctionsNumber
-     *
-     * @return int
-     */
-    public function getCorrectionsNumber()
-    {
-        return $this->correctionsNumber;
-    }
 
     /**
      * Set userId

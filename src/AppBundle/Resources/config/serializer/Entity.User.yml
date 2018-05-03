@@ -1,0 +1,12 @@
+AppBundle\Entity\User:
+    attributes:
+        id:
+            groups: ['group1']
+        pseudo:
+            groups: ['group2']
+        mail:
+            groups: ['group2']
+        created_at:
+            groups: ['group2']
+        posts:
+            groups: ['group2']
