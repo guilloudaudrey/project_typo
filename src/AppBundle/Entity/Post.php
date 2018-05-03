@@ -50,7 +50,7 @@ class Post
    private $user;
 
     /**
-    * @ORM\OneToMany(targetEntity="correction", mappedBy="post")
+    * @ORM\OneToMany(targetEntity="Correction", mappedBy="post")
     */
     private $corrections;
 

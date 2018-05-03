@@ -50,7 +50,7 @@ class Post
    private $user;
 
     /**
-    * @ORM\OneToMany(targetEntity="correction", mappedBy="post")
+    * @ORM\OneToMany(targetEntity="Correction", mappedBy="post")
     */
     private $corrections;
 
@@ -158,5 +158,46 @@ class Post
     public function getUser()
     {
         return $this->user;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->corrections = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add correction
+     *
+     * @param \AppBundle\Entity\correction $correction
+     *
+     * @return Post
+     */
+    public function addCorrection(\AppBundle\Entity\correction $correction)
+    {
+        $this->corrections[] = $correction;
+
+        return $this;
+    }
+
+    /**
+     * Remove correction
+     *
+     * @param \AppBundle\Entity\correction $correction
+     */
+    public function removeCorrection(\AppBundle\Entity\correction $correction)
+    {
+        $this->corrections->removeElement($correction);
+    }
+
+    /**
+     * Get corrections
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCorrections()
+    {
+        return $this->corrections;
     }
 }

@@ -42,12 +42,6 @@ class User
      */
     private $createdAt;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="posts_number", type="integer")
-     */
-    private $postsNumber;
 
     /**
     * @ORM\OneToMany(targetEntity="Post", mappedBy="user")
@@ -137,29 +131,7 @@ class User
         return $this->createdAt;
     }
 
-    /**
-     * Set postsNumber
-     *
-     * @param integer $postsNumber
-     *
-     * @return User
-     */
-    public function setPostsNumber($postsNumber)
-    {
-        $this->postsNumber = $postsNumber;
 
-        return $this;
-    }
-
-    /**
-     * Get postsNumber
-     *
-     * @return int
-     */
-    public function getPostsNumber()
-    {
-        return $this->postsNumber;
-    }
     /**
      * Constructor
      */

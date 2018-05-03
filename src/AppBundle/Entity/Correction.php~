@@ -197,5 +197,52 @@ class Correction
     {
         return $this->comment;
     }
-}
 
+    /**
+     * Set post
+     *
+     * @param \AppBundle\Entity\Post $post
+     *
+     * @return Correction
+     */
+    public function setPost(\AppBundle\Entity\Post $post = null)
+    {
+        $this->post = $post;
+
+        return $this;
+    }
+
+    /**
+     * Get post
+     *
+     * @return \AppBundle\Entity\Post
+     */
+    public function getPost()
+    {
+        return $this->post;
+    }
+
+    /**
+     * Set proofreader
+     *
+     * @param \AppBundle\Entity\Proofreader $proofreader
+     *
+     * @return Correction
+     */
+    public function setProofreader(\AppBundle\Entity\Proofreader $proofreader = null)
+    {
+        $this->proofreader = $proofreader;
+
+        return $this;
+    }
+
+    /**
+     * Get proofreader
+     *
+     * @return \AppBundle\Entity\Proofreader
+     */
+    public function getProofreader()
+    {
+        return $this->proofreader;
+    }
+}

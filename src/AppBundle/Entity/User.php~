@@ -42,12 +42,6 @@ class User
      */
     private $createdAt;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="posts_number", type="integer")
-     */
-    private $postsNumber;
 
     /**
     * @ORM\OneToMany(targetEntity="Post", mappedBy="user")
@@ -137,28 +131,46 @@ class User
         return $this->createdAt;
     }
 
+
     /**
-     * Set postsNumber
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->posts = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add post
      *
-     * @param integer $postsNumber
+     * @param \AppBundle\Entity\Post $post
      *
      * @return User
      */
-    public function setPostsNumber($postsNumber)
+    public function addPost(\AppBundle\Entity\Post $post)
     {
-        $this->postsNumber = $postsNumber;
+        $this->posts[] = $post;
 
         return $this;
     }
 
     /**
-     * Get postsNumber
+     * Remove post
      *
-     * @return int
+     * @param \AppBundle\Entity\Post $post
      */
-    public function getPostsNumber()
+    public function removePost(\AppBundle\Entity\Post $post)
     {
-        return $this->postsNumber;
+        $this->posts->removeElement($post);
+    }
+
+    /**
+     * Get posts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPosts()
+    {
+        return $this->posts;
     }
 }
-
