@@ -30,6 +30,9 @@ services:
         tags: ['controller.service_arguments']
 
     # add more services, or override services that need manual wiring
-    # AppBundle\Service\ExampleService:
-    #     arguments:
-    #         $someArgument: 'some_value'
+    AppBundle\EventListener\UserListener:
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            # - { name: doctrine.event_listener, event: preUpdate }
+
+

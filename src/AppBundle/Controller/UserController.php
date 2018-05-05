@@ -15,6 +15,8 @@ use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\YamlFileLoader;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
+use AppBundle\Form\UserType;
 
 
 /**
@@ -30,23 +32,13 @@ class UserController extends Controller
      * @Route("/", name="user_index")
      * @Method("GET")
      */
-    public function indexAction()
+    public function indexAction(SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
         $users = $em->getRepository('AppBundle:User')->findAll();
+        $data =  $serializer->serialize($users, 'json', ['groups' => ['user']]);
 
-        $classMetadataFactory = new ClassMetadataFactory(new YamlFileLoader(__DIR__.'/../Resources/config/serializer/Entity.User.yml'));
-
-        $normalizer = new ObjectNormalizer($classMetadataFactory);
-        $serializer = new Serializer(array($normalizer));
-
-        $data = $serializer->normalize($users, null, array('groups' => array('group2')));
-  
-        $data_serialized =  $this->get('serializer')->serialize($data, 'json');
-
-        $response = new Response($data_serialized);
-        $response->headers->set('Content-Type', 'application/json');
-        
+        $response = new Response($data, Response::HTTP_OK, array('Content-Type', 'application/json'));
         return $response;
     }
 
@@ -54,29 +46,26 @@ class UserController extends Controller
      * Creates a new user entity.
      *
      * @Route("/new", name="user_new")
-     * @Method({"GET", "POST"})
+     * @Method("POST")
      */
     public function newAction(Request $request)
     {
-    $pseudo = $request->get('pseudo');
-    $mail = $request->get('mail');
-    $createdat = new DateTime();
-        
-    $data = new User;
-    $data->setPseudo($pseudo);
-    $data->setMail($mail);
-    $data->setCreatedAt($createdat);
 
-    $em = $this->getDoctrine()->getManager();
-    $em->persist($data);
-    $em->flush();
+    $user = new User;
+    $form = $this->createForm(UserType::class, $user);
 
-    $response = new Response();
-    $response->setStatusCode(201);
+    $form->submit($request->request->all());
 
-    return $response;
 
+    if ($form->isValid()) {
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+        return new JsonResponse($user, Response::HTTP_CREATED);
+    } else {
+        return new JsonResponse($form->getErrors());
     }
+}
 
     /**
      * Finds and displays a user entity.
@@ -84,68 +73,44 @@ class UserController extends Controller
      * @Route("/{id}", name="user_show")
      * @Method("GET")
      */
-    public function showAction(User $user)
+    public function showAction(User $user, SerializerInterface $serializer)
     {
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($user);
 
-        $data =  $this->get('serializer')->serialize($user, 'json');
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-        
+        $data =  $serializer->serialize($user, 'json', ['groups' => ['user']]);
+        $response = new Response($data, Response::HTTP_OK, array('Content-Type', 'application/json'));
         return $response;
     }
+
 
     /**
      * Edit an existing user entity.
      *
      * @Route("/{id}/edit", name="user_edit")
-     * @Method({"GET", "POST"})
+     * @Method("PATCH")
      */
     public function editAction(Request $request, User $user)
     {
-
-        $pseudo = $request->get('pseudo');
-        $mail = $request->get('mail');
-        $createdat = new DateTime();
-
         $sn = $this->getDoctrine()->getManager();
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($user);
 
-        $response = new Response();
 
        if (empty($user)) {
 
-        $response->setStatusCode(404);
-        return $response;
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         } 
 
-       elseif(!empty($pseudo) && !empty($mail)){
-          $user->setPseudo($pseudo);
-          $user->setMail($mail);
-          $sn->flush();
+        $form = $this->createForm(UserType::class, $user);
+        $form->submit($request->request->all(), false);
 
-          $response->setStatusCode(200);
-          return $response;
-
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+            return new JsonResponse($user, Response::HTTP_OK);
+        } else {
+            return new JsonResponse($form->getErrors());
         }
-       elseif(empty($pseudo) && !empty($mail)){
-          $user->setMail($mail);
-          $sn->flush();
-
-          $response->setStatusCode(200);
-          return $response;
-       }
-       elseif(!empty($pseudo) && empty($mail)){
-        $user->setPseudo($pseudo);
-        $sn->flush();
-        
-        $response->setStatusCode(200);
-        return $response;
-       }
-       else {
-        $response->setStatusCode(406);
-        return $response;
-       }
     }
 
     /**
@@ -162,14 +127,12 @@ class UserController extends Controller
         $response = new Response();
 
       if (empty($user)) {
-        $response->setStatusCode(404);
-        return $response;
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
        }
        else {
         $sn->remove($user);
         $sn->flush();
+        return new JsonResponse($user, Response::HTTP_OK);
        }
-       $response->setStatusCode(200);
-       return $response;
     }
 }

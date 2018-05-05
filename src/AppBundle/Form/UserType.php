@@ -13,14 +13,18 @@ class UserType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('pseudo')->add('mail')->add('createdAt')->add('postsNumber');
+        $builder
+        ->add('pseudo')
+        ->add('mail');
     }/**
      * {@inheritdoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\User'
+            'data_class' => 'AppBundle\Entity\User',
+            // enable/disable CSRF protection for this form
+            'csrf_protection' => true,
         ));
     }
 
